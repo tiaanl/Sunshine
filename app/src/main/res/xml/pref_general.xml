@@ -13,6 +13,6 @@
         android:key="@string/pref_units_key"
         android:defaultValue="@string/pref_units_metric"
         android:entryValues="@array/pref_units_values"
-        android:entries="@array/pref_units_labels"/>
+        android:entries="@array/pref_units_options"/>
 
 </PreferenceScreen>
