@@ -3,6 +3,7 @@ package com.fizix.sunshine;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,11 +12,19 @@ import android.widget.TextView;
 
 public class ForecastAdapter extends CursorAdapter {
 
+    private static final String LOG_TAG = ForecastAdapter.class.getSimpleName();
+
     private final int VIEW_TYPE_TODAY = 0;
     private final int VIEW_TYPE_NORMAL = 1;
 
+    private boolean mUseTodayLayout = false;
+
     public ForecastAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
+    }
+
+    void setUseTodayLayout(boolean useTodayLayout) {
+        mUseTodayLayout = useTodayLayout;
     }
 
     @Override
@@ -25,7 +34,7 @@ public class ForecastAdapter extends CursorAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        return (position == 0) ? VIEW_TYPE_TODAY : VIEW_TYPE_NORMAL;
+        return (position == 0 && mUseTodayLayout) ? VIEW_TYPE_TODAY : VIEW_TYPE_NORMAL;
     }
 
     @Override
@@ -50,8 +59,14 @@ public class ForecastAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         // Populate the icon.
-        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_ID);
-        viewHolder.iconView.setImageResource(R.drawable.ic_launcher);
+        int viewType = getItemViewType(cursor.getPosition());
+        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
+        int resourceId = -1;
+        if (viewType == VIEW_TYPE_TODAY)
+            resourceId = Utility.getArtResourceForWeatherCondition(weatherId);
+        else if (viewType == VIEW_TYPE_NORMAL)
+            resourceId = Utility.getIconResourceForWeatherCondition(weatherId);
+        viewHolder.iconView.setImageResource(resourceId);
 
         // Read the date from the cursor.
         String dateString = cursor.getString(ForecastFragment.COL_WEATHER_DATE);

@@ -95,7 +95,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public void onResume() {
         super.onResume();
 
-        if (mLocation != null && !mLocation.equals(Utility.getPreferredLocation(getActivity()))) {
+        Bundle args = getArguments();
+        if (args != null &&
+                args.containsKey(DetailActivity.DATE_KEY) &&
+                mLocation != null &&
+                !mLocation.equals(Utility.getPreferredLocation(getActivity()))) {
             getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
         }
     }
@@ -106,7 +110,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if (savedInstanceState != null) {
             mLocation = savedInstanceState.getString(LOCATION_KEY);
         }
-        getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+
+        Bundle args = getArguments();
+        if (args != null && args.containsKey(DetailActivity.DATE_KEY)) {
+            getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+        }
     }
 
     private Intent createShareForecastIntent() {
@@ -119,8 +127,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        String dateString = getActivity().getIntent().getStringExtra(DetailActivity.DATE_KEY);
-
         String[] columns = {
                 WeatherEntry.TABLE_NAME + "." + WeatherEntry._ID,
                 WeatherEntry.COLUMN_DATETEXT,
@@ -134,6 +140,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 WeatherEntry.COLUMN_WEATHER_ID,
                 LocationEntry.COLUMN_LOCATION_SETTING
         };
+
+        String dateString = getArguments().getString(DetailActivity.DATE_KEY);
 
         mLocation = Utility.getPreferredLocation(getActivity());
         Uri weatherUri = WeatherEntry.buildWeatherLocationWithDateUri(
@@ -152,7 +160,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         if (cursor != null && cursor.moveToFirst()) {
-            mIconView.setImageResource(R.drawable.ic_launcher);
+            int weatherId = cursor.getInt(cursor.getColumnIndex(WeatherEntry.COLUMN_WEATHER_ID));
+            mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
 
             // Read date from cursor and update views for day of week and date
             String date = cursor.getString(cursor.getColumnIndex(WeatherEntry.COLUMN_DATETEXT));
