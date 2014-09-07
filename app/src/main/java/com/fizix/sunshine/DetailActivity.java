@@ -186,8 +186,8 @@ public class DetailActivity extends ActionBarActivity {
 
                 dateView.setText(Utility.formatDate(dateText));
                 forecastView.setText(description);
-                highView.setText(Utility.formatTemperature(high, isMetric) + "\u00B0");
-                lowView.setText(Utility.formatTemperature(low, isMetric) + "\u00B0");
+                highView.setText(Utility.formatTemperature(getActivity(), high, isMetric));
+                lowView.setText(Utility.formatTemperature(getActivity(), low, isMetric));
 
                 mForecastStr = String.format("%s - %s - %s/%s",
                         dateView.getText(),
