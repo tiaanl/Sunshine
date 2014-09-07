@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.fizix.sunshine.sync.SunshineSyncAdapter;
+
 public class MainActivity extends ActionBarActivity implements ForecastFragment.Callback {
 
     private final String TAG = MainActivity.class.getSimpleName();
@@ -36,6 +38,11 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
         ForecastFragment forecastFragment =  ((ForecastFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.fragment_forecast));
         forecastFragment.setUseTodayLayout(!mTwoPane);
+
+        // The OpenWeather API update the data every 3 hours.
+        // Since we are automate the data loading, a periodic sync is scheduled and every 3 hours
+        // the data is retrieved.
+        SunshineSyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.fizix.sunshine;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,13 +16,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.fizix.sunshine.data.WeatherContract;
+import com.fizix.sunshine.sync.SunshineSyncAdapter;
 
 import java.util.Date;
 
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final String LOG_TAG = ForecastFragment.class.getSimpleName();
 
     private static final int FORECAST_LOADER = 0;
     private static final String SELECTED_KEY = "selected_key";
@@ -107,8 +107,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     private void updateWeather() {
-        FetchWeatherTask task = new FetchWeatherTask(getActivity());
-        task.execute(Utility.getPreferredLocation(getActivity()));
+        SunshineSyncAdapter.syncImmediately(getActivity());
     }
 
     @Override
